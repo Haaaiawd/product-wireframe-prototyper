@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 640" role="img" aria-label="移动端线稿示意：真实页面、UX 标注、路径按钮与按需资产标记">
+  <defs><pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".7" fill="#d7d8d1"/></pattern><filter id="lift"><feDropShadow dx="0" dy="11" stdDeviation="15" flood-opacity=".08"/></filter></defs>
+  <rect width="960" height="640" rx="24" fill="#f7f6f2"/><rect width="960" height="640" rx="24" fill="url(#dots)"/>
+  <g font-family="Inter,Arial,'PingFang SC','Noto Sans CJK SC',sans-serif" fill="#1c1e1a">
+    <text x="52" y="46" font-size="12" font-weight="700" letter-spacing="2.5">01 / MOBILE BLUEPRINT</text>
+    <text x="756" y="46" font-size="11" fill="#777a72">LOW-FIDELITY · INTERACTIVE</text>
+  </g>
+  <g font-family="Inter,Arial,'PingFang SC','Noto Sans CJK SC',sans-serif">
+    <rect x="73" y="67" width="317" height="522" rx="24" fill="white" stroke="#242621" stroke-width="2.4"/>
+    <path d="M 73 163 H 390 M 73 512 H 390" stroke="#252722" stroke-width="2"/>
+    <text x="96" y="98" fill="#85877f" font-size="10" letter-spacing="1">PRODUCT / TODAY</text>
+    <text x="96" y="135" fill="#232520" font-size="25" font-weight="750">Home</text>
+    <rect x="320" y="82" width="53" height="28" rx="14" fill="white" stroke="#242621" stroke-width="1.5"/>
+    <text x="327" y="101" fill="#232520" font-size="10" font-weight="700">i Info</text>
+    <rect x="91" y="184" width="281" height="157" rx="17" fill="white" stroke="#1e201c" stroke-width="2"/>
+    <text x="108" y="208" fill="#878982" font-size="10" letter-spacing="1.3">PRIMARY TASK</text>
+    <text x="108" y="240" fill="#20221e" font-size="17" font-weight="750">The primary task</text>
+    <text x="108" y="266" fill="#74766f" font-size="11">Why does this belong here?</text>
+    <rect x="108" y="289" width="74" height="30" rx="15" fill="#20221e"/>
+    <text x="123" y="309" fill="white" font-size="11" font-weight="700">Start →</text>
+    <circle cx="351" cy="204" r="14" fill="white" stroke="#20221e" stroke-width="2"/>
+    <text x="347" y="209" fill="#20221e" font-size="12" font-weight="800">1</text>
+    <rect x="91" y="356" width="281" height="111" rx="17" fill="white" stroke="#1e201c" stroke-width="2"/>
+    <text x="108" y="384" fill="#84867e" font-size="10" letter-spacing="1.3">CURRENT STATE</text>
+    <text x="108" y="409" fill="#20221e" font-size="14" font-weight="700">A state worth seeing</text>
+    <path d="M 108 429 h218 M 108 447 h173" stroke="#dedfd9" stroke-width="8" stroke-linecap="round"/>
+    <rect x="91" y="477" width="89" height="25" rx="13" fill="white" stroke="#20221e" stroke-width="1.4"/>
+    <text x="103" y="494" fill="#20221e" font-size="10" font-weight="700">View path</text>
+    <text x="97" y="553" fill="#4a4d47" font-size="11">Home</text><text x="157" y="553" fill="#a0a29b" font-size="11">Explore</text><text x="282" y="553" fill="#a0a29b" font-size="11">Archive</text><text x="347" y="553" fill="#a0a29b" font-size="11">Me</text>
+    <circle cx="234" cy="518" r="29" fill="white" stroke="#20221e" stroke-width="2"/>
+    <text x="224" y="530" fill="#20221e" font-size="32">+</text>
+  </g>
+  <path d="M 365 203 H 451" stroke="#70736c" stroke-width="1.5" stroke-dasharray="5 6"/>
+  <path d="M 180 491 C 340 500 334 379 451 379" fill="none" stroke="#70736c" stroke-width="1.5" stroke-dasharray="5 6"/>
+  <g font-family="Inter,Arial,'PingFang SC','Noto Sans CJK SC',sans-serif">
+    <rect x="452" y="86" width="449" height="143" rx="17" fill="white" stroke="#c7c9c1"/>
+    <circle cx="482" cy="119" r="14" fill="white" stroke="#20221e" stroke-width="2"/><text x="478" y="124" fill="#20221e" font-size="12" font-weight="800">1</text>
+    <text x="506" y="123" fill="#20221e" font-size="16" font-weight="750">UX note / click for why</text>
+    <text x="475" y="154" fill="#666961" font-size="13">Why here? What happens when a user taps it?</text>
+    <text x="475" y="179" fill="#666961" font-size="13">The note opens without triggering the card.</text>
+    <rect x="475" y="194" width="154" height="22" rx="11" fill="#efefeb"/>
+    <text x="488" y="209" fill="#555951" font-size="10">VISIBLE BY DEFAULT</text>
+    <rect x="452" y="244" width="449" height="139" rx="17" fill="white" stroke="#c7c9c1"/>
+    <text x="475" y="278" fill="#20221e" font-size="16" font-weight="750">Journey / show cause and effect</text>
+    <text x="475" y="304" fill="#666961" font-size="13">Home → Task → Completion → Saved record</text>
+    <text x="475" y="328" fill="#666961" font-size="13">Read the path. Click the product to experience it.</text>
+    <rect x="475" y="345" width="123" height="23" rx="11" fill="#efefeb"/>
+    <text x="487" y="361" fill="#555951" font-size="10">OPEN ON DEMAND</text>
+    <rect x="452" y="398" width="449" height="162" rx="17" fill="white" stroke="#c7c9c1"/>
+    <text x="475" y="432" fill="#20221e" font-size="16" font-weight="750">Next screens keep the rationale</text>
+    <circle cx="488" cy="464" r="13" fill="white" stroke="#20221e" stroke-width="1.5"/><text x="484" y="469" fill="#20221e" font-size="11">2</text>
+    <text x="514" y="469" fill="#62665e" font-size="12">Data state: empty first, record after action</text>
+    <rect x="475" y="491" width="48" height="24" rx="7" fill="#20221e"/><text x="484" y="507" fill="white" font-size="11" font-weight="700">A01</text>
+    <text x="536" y="507" fill="#62665e" font-size="12">Optional art / ambience placeholder</text>
+    <text x="475" y="541" fill="#858880" font-size="10">Markers remain attached to the screen they explain.</text>
+  </g>
+  <text x="52" y="618" font-family="Inter,Arial,'PingFang SC','Noto Sans CJK SC',sans-serif" fill="#8c8e87" font-size="11">ILLUSTRATIVE REDRAW · Based on mobile-shell.html · Not a browser screenshot</text>
+</svg>

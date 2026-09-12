@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desktop Product Blueprint</title>
+<style>
+:root{--ink:#171717;--muted:#6d6d6d;--line:#c9c9c9;--paper:#fff;--wash:#f4f4f1;--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:var(--wash);color:var(--ink);font:14px/1.5 ui-sans-serif,system-ui,-apple-system,"PingFang SC",sans-serif}button{font:inherit;color:inherit;cursor:pointer}button:focus-visible,[tabindex="0"]:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.app{min-height:100vh;display:grid;grid-template-columns:220px minmax(0,1fr)}.sidebar,.inspector{background:var(--paper);padding:22px}.sidebar{border-right:1px solid var(--line)}.brand{font-size:18px;font-weight:750;margin-bottom:28px}.nav{display:grid;gap:8px}.nav button,.quiet,.primary{border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 12px;text-align:left}.nav button.active,.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.workspace{min-width:0}.topbar{height:68px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:5}.topbar h1{font-size:16px;margin:0}.toolbar{display:flex;gap:8px}.content{padding:28px;max-width:1100px;margin:auto}.kicker{font-size:11px;letter-spacing:.12em;color:var(--muted)}h2{font-size:28px;margin:6px 0 22px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:20px;min-height:150px}.card.action{cursor:pointer}.card h3{margin:5px 0 8px;font-size:18px}.muted{color:var(--muted)}.button-row{display:flex;gap:8px;margin-top:18px}.primary{text-align:center}.annotation,.asset-marker{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:1px solid var(--ink);background:#fff;font-weight:700}.asset-marker{width:auto;border-radius:8px;padding:0 7px}.asset-slot{position:relative;border:1px dashed var(--line);border-radius:12px;padding:24px;margin-top:14px}.asset-slot .asset-marker{top:8px;right:8px}.status{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:3px 8px;font-size:12px}.wide{grid-column:1/-1}
+.inspector{position:fixed;top:0;right:0;bottom:0;width:min(340px,calc(100vw - 20px));z-index:30;border-left:1px solid var(--line);box-shadow:-12px 0 40px #0002;transform:translateX(105%);transition:transform .2s;overflow:auto}.inspector.open{transform:none}.inspector h3{margin:0 0 6px}.inspector section{border-top:1px solid var(--line);padding-top:16px;margin-top:18px}.popover,.layers,.journey{position:fixed;background:#fff;border:1px solid var(--ink);border-radius:14px;box-shadow:0 12px 40px #0002;z-index:20}.popover{width:min(300px,calc(100vw - 24px));max-height:min(60vh,350px);overflow:auto;padding:16px}.layers{right:20px;top:76px;padding:14px;display:none}.layers.open{display:grid;gap:10px}.journey{right:20px;bottom:20px;width:min(370px,calc(100vw - 20px));max-height:75vh;overflow:auto;padding:18px;display:none}.journey.open{display:block}.journey ol{padding-left:20px}.journey li{padding:8px;border:1px solid var(--line);border-radius:9px;margin:8px 0;list-style-position:inside}.journey-trigger{position:fixed;left:240px;bottom:20px;z-index:10}.hidden{display:none!important}[data-layer="asset"]{display:none}.close{float:right;border:0;background:none;font-size:18px}
+@media(max-width:760px){.app{display:block}.sidebar{border:0;border-bottom:1px solid var(--line);padding:12px;position:sticky;top:0;z-index:7}.brand{display:none}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap}.topbar{top:57px;padding:0 14px}.content{padding:18px}.grid{grid-template-columns:1fr}.journey{left:10px;right:10px;bottom:10px;width:auto;max-height:68vh}.journey-trigger{left:12px;bottom:12px}.layers{right:10px;top:126px}h2{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside class="sidebar"><div class="brand">产品工作台</div><nav class="nav"><button data-go="overview">概览</button><button data-go="case">工作区</button><button data-go="done">记录</button></nav></aside>
+ <main class="workspace"><header class="topbar"><h1 id="pageTitle">项目概览</h1><div class="toolbar"><button class="quiet" id="layersButton">图层</button><button class="quiet" id="inspectorButton" aria-expanded="false" aria-controls="inspector">ⓘ 说明</button></div></header><div class="content" id="screen"></div></main>
+ <aside class="inspector" id="inspector" aria-label="页面说明"><button class="close" id="inspectorClose" aria-label="关闭">×</button><h3>页面说明</h3><p id="pageInfo" class="muted"></p></aside>
+</div>
+<button class="quiet journey-trigger" id="journeyButton">查看路径</button>
+<div class="layers" id="layers"><label><input type="checkbox" id="uxToggle" checked> UX 标注</label><label><input type="checkbox" id="assetToggle"> 美术资产</label></div>
+<section class="journey" id="journey"><button class="close" id="journeyClose" aria-label="关闭">×</button><div id="journeyBody"></div></section>
+<div class="popover hidden" id="popover"></div>
+<template id="page-overview"><div class="kicker">OVERVIEW</div><h2>今天最值得推进的事项</h2><div class="grid"><article class="card action" data-transition="open-case" tabindex="0"><button class="annotation" data-layer="ux" data-note="primary">1</button><span class="status">待处理</span><h3>打开核心工作项</h3><p class="muted">把最小端到端任务放在桌面主区域，避免用外部页面切换器演示。</p></article><article class="card"><h3>近期记录</h3><p class="muted">次要信息留在独立区域，维持桌面信息密度。</p></article></div></template>
+<template id="page-case"><div class="kicker">WORKSPACE / ITEM 01</div><h2>处理核心工作项</h2><div class="grid"><article class="card wide"><button class="annotation" data-layer="ux" data-note="workspace">2</button><h3>主要编辑区</h3><p class="muted">这里替换为真实表单、表格、画布或编辑器。</p><div class="asset-slot"><b>可选主视觉区域</b><p class="muted">仅在资产会影响体验时保留。</p><button class="asset-marker" data-layer="asset" data-asset="A01">A01</button></div><div class="button-row"><button class="primary" data-transition="resolve-case">完成并归档</button><button class="quiet" data-go="overview">返回</button></div></article></div></template>
+<template id="page-done"><div class="kicker">RECORD</div><h2>工作记录</h2><article class="card"><button class="annotation" data-layer="ux" data-note="record-state">2</button><h3>核心工作项</h3><p class="muted" id="caseResult"></p><button class="quiet" data-go="overview">回到概览</button></article></template>
+<script>
+const pages={overview:{title:"项目概览",info:"核心入口与工作优先级。"},case:{title:"工作区",info:"完成主要任务，并保留必要上下文。"},done:{title:"记录",info:"显示可验证的成功结果。"}};
+const notes={primary:"核心入口直接触发用户旅程的第一段状态迁移。",workspace:"桌面产品使用独立工作区，而不是放大的手机卡片。",'record-state':"数据 / 状态：未完成时为空；完成操作后才出现记录。真实产品需要注明数据来源与异常状态。"};
+const assets={A01:{name:"工作区主视觉",type:"Image / Illustration",page:"case",priority:"P1",intent:"辅助理解当前对象",constraints:"宽屏裁切；文字安全区；可隐藏",reuse:"详情摘要可复用"}};
+const flow={actor:"需要集中处理一项工作的用户",goal:"完成核心工作并确认结果已保存",entry:"overview",outcome:"记录页出现已完成条目",transitions:[{id:"open-case",from:"overview",event:"打开核心工作项",to:"case",result:"进入专用工作区"},{id:"resolve-case",from:"case",event:"完成并归档",to:"done",result:"出现可确认的完成记录"}]};
+let currentPage=flow.entry,hasCompletedCase=false,activePopoverAnchor=null;
+const $=selector=>document.querySelector(selector),$$=selector=>[...document.querySelectorAll(selector)];
+const screenNode=$("#screen"),pageTitle=$("#pageTitle"),pageInfo=$("#pageInfo"),popover=$("#popover");
+const layers=$("#layers"),journey=$("#journey"),journeyBody=$("#journeyBody"),inspector=$("#inspector");
+const uxToggle=$("#uxToggle"),assetToggle=$("#assetToggle"),inspectorButton=$("#inspectorButton");
+function closePopover(){popover.classList.add("hidden");activePopoverAnchor=null}
+function applyLayers(){$$('[data-layer="ux"]').forEach(node=>node.style.display=uxToggle.checked?'':'none');$$('[data-layer="asset"]').forEach(node=>node.style.display=assetToggle.checked?'block':'none');closePopover()}
+function render(key){if(!pages[key])return;currentPage=key;screenNode.innerHTML=$("#page-"+key).innerHTML;if(key==='done')$('#caseResult').textContent=hasCompletedCase?'已完成并归档 · 结果保存在此记录中。':'尚无完成记录。请先从概览进入工作区。';pageTitle.textContent=pages[key].title;pageInfo.textContent=pages[key].info;$$('.nav button').forEach(node=>node.classList.toggle('active',node.dataset.go===key));applyLayers();inspector.classList.remove('open');inspectorButton.setAttribute('aria-expanded','false')}
+function performTransition(id){const step=flow.transitions.find(item=>item.id===id);if(!step)return;if(currentPage!==step.from){console.warn(`Transition ${id} expected ${step.from}, received ${currentPage}`);return}if(id==='resolve-case')hasCompletedCase=true;render(step.to)}
+function drawJourney(){journeyBody.innerHTML=`<div class="kicker">用户路径</div><h3>${flow.goal}</h3><p class="muted">${flow.actor}</p><ol>${flow.transitions.map(step=>`<li><b>${step.event}</b><br><span class="muted">${pages[step.from].title} → ${pages[step.to].title} · ${step.result}</span></li>`).join('')}</ol><p><b>完成之后：</b>${flow.outcome}</p>`}
+function positionPopover(){if(!activePopoverAnchor?.isConnected){closePopover();return}const rect=activePopoverAnchor.getBoundingClientRect();if(rect.bottom<0||rect.top>innerHeight){closePopover();return}popover.style.left=Math.max(12,Math.min(rect.right-popover.offsetWidth,innerWidth-popover.offsetWidth-12))+'px';popover.style.top=Math.max(12,Math.min(rect.bottom+8,innerHeight-popover.offsetHeight-12))+'px'}
+function showPopover(target,html){popover.innerHTML=html;popover.classList.remove('hidden');activePopoverAnchor=target;positionPopover()}
+document.addEventListener('click',event=>{
+  const note=event.target.closest('[data-note]'),asset=event.target.closest('[data-asset]');
+  if(note){showPopover(note,`<b>UX ${note.textContent}</b><p>${notes[note.dataset.note]}</p>`);return}
+  if(asset){const spec=assets[asset.dataset.asset];showPopover(asset,`<b>${asset.dataset.asset} · ${spec.name}</b><p>${spec.type} · ${spec.priority}</p><p>${spec.intent}</p><small>${spec.constraints}<br>复用：${spec.reuse}</small>`);return}
+  const transition=event.target.closest('[data-transition]');if(transition){performTransition(transition.dataset.transition);return}
+  const route=event.target.closest('[data-go]');if(route){render(route.dataset.go);return}
+  if(!event.target.closest('#popover'))closePopover();
+  if(!event.target.closest('#layers')&&!event.target.closest('#layersButton'))layers.classList.remove('open');
+  if(!event.target.closest('#inspector')&&!event.target.closest('#inspectorButton')){inspector.classList.remove('open');inspectorButton.setAttribute('aria-expanded','false')}
+});
+document.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target.matches('[tabindex="0"]')){event.preventDefault();event.target.click()}if(event.key==='Escape'){closePopover();layers.classList.remove('open');journey.classList.remove('open');inspector.classList.remove('open');inspectorButton.setAttribute('aria-expanded','false')}});
+document.addEventListener('scroll',()=>{if(activePopoverAnchor)positionPopover()},{capture:true,passive:true});window.addEventListener('resize',()=>{if(activePopoverAnchor)positionPopover()});
+$("#layersButton").onclick=()=>layers.classList.toggle('open');$("#journeyButton").onclick=()=>journey.classList.add('open');$("#journeyClose").onclick=()=>journey.classList.remove('open');
+inspectorButton.onclick=()=>{const open=inspector.classList.toggle('open');inspectorButton.setAttribute('aria-expanded',String(open))};$("#inspectorClose").onclick=()=>{inspector.classList.remove('open');inspectorButton.setAttribute('aria-expanded','false')};
+uxToggle.onchange=applyLayers;assetToggle.onchange=applyLayers;
+function validateBlueprint(){
+  const errors=[],ids=new Set(),states=new Set(Object.keys(pages));
+  flow.transitions.forEach(step=>{if(!step.id||ids.has(step.id))errors.push('Duplicate or missing transition id');ids.add(step.id);if(!states.has(step.from)||!states.has(step.to)||!step.event||!step.result)errors.push(`Invalid transition: ${step.id}`);const template=$("#page-"+step.from);if(template&&!template.content.querySelector(`[data-transition="${step.id}"]`))errors.push(`Transition ${step.id} has no action on ${step.from}`)});
+  const fragments=[document,...Object.keys(pages).map(key=>new DOMParser().parseFromString($("#page-"+key).innerHTML,'text/html'))],all=selector=>fragments.flatMap(fragment=>[...fragment.querySelectorAll(selector)]);
+  all('[data-go]').forEach(node=>{if(!states.has(node.dataset.go))errors.push(`Missing route: ${node.dataset.go}`)});
+  all('[data-transition]').forEach(node=>{if(!ids.has(node.dataset.transition))errors.push(`Missing transition: ${node.dataset.transition}`)});
+  all('[data-note]').forEach(node=>{if(!notes[node.dataset.note])errors.push(`Missing note: ${node.dataset.note}`)});
+  all('[data-asset]').forEach(node=>{const spec=assets[node.dataset.asset];if(!spec||!spec.priority||!spec.intent||!spec.constraints||!spec.reuse)errors.push(`Incomplete asset: ${node.dataset.asset}`)});
+  const wiredIds=new Set(['layersButton','inspectorButton','inspectorClose','journeyButton','journeyClose']);
+  all('button').forEach(node=>{if(!(node.disabled||node.dataset.go||node.dataset.transition||node.dataset.note||node.dataset.asset||wiredIds.has(node.id)))errors.push(`Active button without behavior: ${node.textContent.trim().slice(0,30)}`)});
+  window.blueprintValidation={ok:!errors.length,errors};if(errors.length)console.error('Blueprint validation failed',errors);else console.info('Blueprint validation passed');return window.blueprintValidation;
+}
+render(currentPage);drawJourney();validateBlueprint();
+</script>
+</body></html>

@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Product Wireframe</title>
+  <style>
+    :root{
+      --ink:#111;--paper:#fff;--wash:#f1f1ef;--muted:#696969;--line:#c8c8c3;
+      --radius:18px;--nav-h:78px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--wash)}
+    button{font:inherit;color:inherit}
+    button,[data-go],[data-action]{cursor:pointer}
+    button:focus-visible,[data-go]:focus-visible,[data-action]:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+    .viewer{min-height:100vh;display:grid;place-items:start center}
+    .canvas{position:relative;background:var(--paper);overflow:hidden;box-shadow:0 0 32px #00000012}
+
+    .canvas{width:min(390px,100%);height:100dvh;min-height:0;border-inline:2px solid var(--ink)}
+
+    .screen{height:100%;overflow:auto;padding-bottom:calc(var(--nav-h) + 28px);scrollbar-width:none}
+    .screen::-webkit-scrollbar{display:none}
+    .app-head{min-height:88px;padding:26px 20px 14px;border-bottom:1px dashed var(--line);display:flex;align-items:end;justify-content:space-between;gap:16px}
+    .app-head h1{font-size:23px;line-height:1.1;margin:0}
+    .eyebrow,.muted{font-size:12px;color:var(--muted)}
+    .content{padding:16px;display:grid;gap:12px}
+    .card{position:relative;border:1.75px solid var(--ink);border-radius:var(--radius);padding:15px;background:var(--paper)}
+    .card[data-go]:hover,.row[data-go]:hover{background:#f5f5f2}
+    .card h2{font-size:16px;margin:4px 0 7px}
+    .row{border:1.5px dashed #858585;border-radius:13px;padding:12px;margin-top:8px}
+    .button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 13px;border:1.5px solid var(--ink);border-radius:999px;background:var(--paper);font-weight:650}
+    .button.primary{background:var(--ink);color:var(--paper)}
+    .back{border:0;background:transparent;padding:0;text-decoration:underline;text-underline-offset:3px}
+
+    .bottom-nav{position:absolute;z-index:10;left:0;right:0;bottom:0;height:var(--nav-h);display:grid;grid-template-columns:1fr 1fr 92px 1fr 1fr;align-items:center;background:var(--paper);border-top:2px solid var(--ink);padding:7px 10px max(7px,env(safe-area-inset-bottom))}
+    .nav-item{border:0;background:transparent;border-radius:12px;min-height:52px;font-size:12px}
+    .nav-item.active{font-weight:750;background:#ededeb}
+    .create{position:absolute;z-index:13;left:50%;bottom:32px;translate:-50% 0;width:62px;height:62px;border:2px solid var(--ink);border-radius:50%;background:var(--paper);font-size:30px;line-height:1}
+
+    /* The create menu is an overlay above the current screen, not another page. */
+    .create-menu{position:absolute;z-index:12;left:14px;right:14px;bottom:94px;padding:12px;border:2px solid var(--ink);border-radius:22px;background:var(--paper);box-shadow:0 12px 28px #0002;display:none;grid-template-columns:1fr 1fr;gap:10px}
+    .create-menu.open{display:grid}
+    .create-option{min-height:76px;border:1.5px dashed #777;border-radius:15px;background:#fafaf8;text-align:left;padding:12px}
+    .create-option:disabled{cursor:not-allowed;opacity:.46}
+    .create-option strong,.create-option span{display:block}
+    .create-option span{margin-top:4px;font-size:12px;color:var(--muted)}
+
+    /* Prototype-only journey explanation, read-only by default. */
+    .journey-button{position:absolute;z-index:11;left:14px;bottom:92px;min-height:38px;padding:7px 12px;border:1.5px solid var(--ink);border-radius:999px;background:var(--paper);display:flex;align-items:center;gap:8px;font-size:12px;font-weight:720;box-shadow:0 5px 16px #00000016;transition:.16s ease}
+    .journey-button::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ink)}
+    .journey-scrim{position:absolute;z-index:44;inset:0;background:#0003;opacity:0;pointer-events:none;transition:opacity .18s ease}
+    .journey-scrim.open{opacity:1;pointer-events:auto}
+    .journey-panel{position:absolute;z-index:45;left:0;right:0;bottom:0;max-height:78%;overflow:auto;border-top:2px solid var(--ink);border-radius:26px 26px 0 0;background:var(--paper);padding:22px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -18px 50px #0003;translate:0 105%;transition:translate .22s cubic-bezier(.2,.75,.25,1)}
+    .journey-panel.open{translate:0}
+    .journey-panel h2{font-size:22px;line-height:1.15;margin:5px 42px 8px 0}
+    .journey-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;color:var(--muted)}
+    .journey-context{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:16px 0}
+    .journey-fact{border:1.5px solid var(--ink);border-radius:14px;padding:11px}
+    .journey-fact span{display:block;font-size:10px;letter-spacing:.08em;color:var(--muted);margin-bottom:5px}
+    .journey-fact strong{font-size:13px;line-height:1.35}
+    .journey-steps{display:grid;gap:7px;margin:14px 0}
+    .journey-step{position:relative;width:100%;border:1.5px solid var(--line);border-radius:15px;background:var(--paper);padding:11px 12px 11px 46px;text-align:left;min-height:58px}
+    .journey-number{position:absolute;left:11px;top:12px;width:25px;height:25px;border:1.5px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;background:var(--paper)}
+    .journey-step strong,.journey-step span{display:block}
+    .journey-step strong{font-size:13px}
+    .journey-step span{font-size:11px;color:var(--muted);margin-top:3px}
+    .journey-step em{display:block;margin-top:6px;font-size:11px;font-style:normal;font-weight:650}
+    .journey-outcome{border-top:1px dashed var(--line);padding-top:14px;font-size:13px;line-height:1.45}
+    .journey-outcome span{font-size:10px;letter-spacing:.08em;color:var(--muted);display:block;margin-bottom:4px}
+
+    .annotation{position:absolute;z-index:8;right:9px;top:9px;width:27px;height:27px;border:2px solid var(--ink);border-radius:50%;background:var(--paper);font-size:12px;font-weight:800;display:grid;place-items:center}
+    .asset-slot{position:relative;min-height:118px;margin:12px 0;border:1.5px dashed #777;border-radius:16px;background:repeating-linear-gradient(135deg,#fff,#fff 9px,#f4f4f1 9px,#f4f4f1 10px);display:grid;place-items:center;text-align:center;padding:20px}
+    .asset-slot span{font-size:13px;font-weight:760;letter-spacing:.04em}
+    .asset-slot small{display:block;margin-top:5px;color:var(--muted)}
+    .asset-marker{position:absolute;z-index:8;right:9px;top:9px;min-width:38px;height:27px;padding:0 8px;border:1.5px dashed var(--ink);border-radius:8px;background:var(--ink);color:var(--paper);font-size:11px;font-weight:820;display:grid;place-items:center}
+    .canvas.hide-ux [data-layer="ux"],.canvas.hide-assets [data-layer="asset"]{display:none!important}
+    .popover{position:absolute;z-index:30;width:min(300px,calc(100% - 32px));max-height:calc(100% - 24px);overflow:auto;border:2px solid var(--ink);border-radius:16px;background:var(--paper);padding:14px;box-shadow:0 12px 28px #0002;display:none}
+    .popover.open{display:block}
+    .popover h3{font-size:15px;margin:0 0 6px}
+    .popover p{font-size:13px;line-height:1.5;margin:0;color:#292929}
+    .popover .close{margin-top:10px}
+    .asset-spec{display:grid;grid-template-columns:70px 1fr;gap:6px 10px;margin:10px 0 0;font-size:12px;line-height:1.45}
+    .asset-spec dt{color:var(--muted)}
+    .asset-spec dd{margin:0;font-weight:620}
+
+    .info-button{position:absolute;z-index:40;right:12px;top:12px;min-width:46px;height:42px;padding:0 12px;border:2px solid var(--ink);border-radius:999px;background:var(--paper);font-weight:750;box-shadow:0 5px 18px #0002}
+    .info-drawer{position:absolute;z-index:50;right:12px;top:12px;width:min(350px,calc(100% - 24px));max-height:calc(100% - 24px);overflow:auto;border:2px solid var(--ink);border-radius:20px;background:var(--paper);padding:18px;box-shadow:0 16px 42px #0003;translate:calc(100% + 32px) 0;opacity:0;pointer-events:none;transition:.18s ease}
+    .info-drawer.open{translate:0;opacity:1;pointer-events:auto}
+    .info-drawer h2{font-size:18px;margin:0 40px 8px 0}
+    .info-drawer p,.info-drawer li{font-size:13px;line-height:1.55}
+    .drawer-close{position:absolute;right:12px;top:12px;width:32px;height:32px;border:1.5px solid var(--ink);border-radius:50%;background:var(--paper)}
+    .layer-list{display:grid;gap:9px;margin:14px 0}
+    .layer-toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:50px;border:1.5px solid var(--ink);border-radius:14px;padding:9px 11px;background:var(--paper)}
+    .layer-toggle strong,.layer-toggle small{display:block}
+    .layer-toggle small{margin-top:3px;color:var(--muted)}
+    .switch{position:relative;width:42px;height:24px;flex:0 0 auto}
+    .switch input{position:absolute;opacity:0;pointer-events:none}
+    .switch span{position:absolute;inset:0;border:1.5px solid var(--ink);border-radius:999px;background:var(--paper);transition:.16s ease}
+    .switch span::after{content:"";position:absolute;width:16px;height:16px;left:3px;top:2.5px;border-radius:50%;background:var(--ink);transition:.16s ease}
+    .switch input:checked+span{background:var(--ink)}
+    .switch input:checked+span::after{translate:17px 0;background:var(--paper)}
+
+    @media(max-width:600px){
+      body{background:var(--paper)}
+      .canvas{border:0;box-shadow:none}
+      .info-button{right:9px;top:9px}
+      .info-drawer{right:9px;top:9px;width:calc(100% - 18px);max-height:calc(100% - 18px)}
+    }
+    [hidden]{display:none!important}
+  </style>
+</head>
+
+<!-- Mobile product shell. Delete every unexplained sample before delivery. -->
+<body>
+  <main class="viewer">
+    <section class="canvas hide-assets" id="canvas" aria-label="可交互产品线稿">
+      <div class="screen" id="screen"></div>
+      <div class="create-menu" id="createMenu" aria-label="创建选项">
+        <button class="create-option" data-go="detail"><strong>选项一</strong><span>进入核心示例任务</span></button>
+        <button class="create-option" disabled><strong>选项二 · 占位</strong><span>未纳入本轮原型</span></button>
+        <button class="create-option" disabled><strong>选项三 · 占位</strong><span>未纳入本轮原型</span></button>
+        <button class="create-option" disabled><strong>选项四 · 占位</strong><span>未纳入本轮原型</span></button>
+      </div>
+      <button class="journey-button" id="journeyButton" aria-expanded="false" aria-controls="journeyPanel">查看路径</button>
+      <button class="create" id="createButton" aria-expanded="false" aria-controls="createMenu">＋</button>
+      <nav class="bottom-nav" aria-label="主导航">
+        <button class="nav-item active" data-nav="home" data-go="home">首页</button>
+        <button class="nav-item" data-nav="explore" data-go="explore">发现</button>
+        <span></span>
+        <button class="nav-item" data-nav="archive" data-go="archive">归档</button>
+        <button class="nav-item" data-nav="me" data-go="me">我的</button>
+      </nav>
+      <div class="journey-scrim" id="journeyScrim"></div>
+      <aside class="journey-panel" id="journeyPanel" aria-label="用户路径">
+        <button class="drawer-close" id="journeyClose" aria-label="关闭路径">×</button>
+        <div class="journey-kicker">USER JOURNEY · 01</div>
+        <h2 id="journeyTitle"></h2>
+        <div class="journey-context">
+          <div class="journey-fact"><span>此刻的用户</span><strong id="journeyActor"></strong></div>
+          <div class="journey-fact"><span>想完成</span><strong id="journeyGoal"></strong></div>
+        </div>
+        <div class="journey-steps" id="journeySteps"></div>
+        <div class="journey-outcome"><span>完成之后</span><strong id="journeyOutcome"></strong></div>
+      </aside>
+      <button class="info-button" id="infoButton" aria-expanded="false" aria-controls="infoDrawer">ⓘ 说明</button>
+      <aside class="info-drawer" id="infoDrawer" aria-label="页面说明与标注图层">
+        <button class="drawer-close" id="drawerClose" aria-label="关闭">×</button>
+        <h2 id="infoTitle"></h2>
+        <p id="infoDescription"></p>
+        <hr>
+        <p><strong>标注显示</strong></p>
+        <div class="layer-list">
+          <label class="layer-toggle"><span><strong>UX 标注</strong><small>功能、交互与待确认决策</small></span><span class="switch"><input id="toggleUX" type="checkbox" checked><span></span></span></label>
+          <label class="layer-toggle"><span><strong>美术资产</strong><small>图片、声音、字体与主题依赖</small></span><span class="switch"><input id="toggleAssets" type="checkbox"><span></span></span></label>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    // Replace these sample screens, metadata and annotations for each product.
+    const pages = {
+      home: {
+        nav: "home",
+        title: "页面说明 · 首页",
+        description: "首页建立产品的核心状态，并给出主任务的最短入口。",
+        html: `
+          <header class="app-head"><div><div class="eyebrow">PRODUCT / TODAY</div><h1>产品首页</h1></div></header>
+          <div class="content">
+            <article class="card" data-transition="open-task" tabindex="0"><button class="annotation" data-layer="ux" data-note="home-primary">1</button><div class="eyebrow">PRIMARY TASK</div><h2>最重要的任务入口</h2><p class="muted">用真实但可替换的内容展示用户为什么点击。</p><span class="button primary">开始</span></article>
+            <article class="card"><div class="eyebrow">CURRENT STATE</div><h2>用户当前需要看见的状态</h2><div class="row">状态或内容摘要</div><div class="row">另一条摘要</div></article>
+          </div>
+          `
+      },
+      detail: {
+        nav: "home",
+        title: "页面说明 · 核心任务",
+        description: "这个页面承接首页主入口，让核心任务形成完整的下一步。",
+        html: `
+          <header class="app-head"><div><button class="back" data-go="home">← 返回</button><h1>核心任务</h1></div></header>
+          <div class="content"><article class="card"><button class="annotation" data-layer="ux" data-note="detail-step">1</button><div class="eyebrow">STEP / 01</div><h2>在这里放置真实交互结构</h2><p class="muted">表单、选择、编辑器、画布或工作区都应按产品需要替换。</p><div class="asset-slot"><div><span>主视觉 / 背景区域</span><small>线稿只保留空间与可读性关系</small></div><button class="asset-marker" data-layer="asset" data-asset="A01">A01</button></div><button class="button primary" data-transition="save-result">完成当前步骤</button></article></div>`
+      },
+      explore: {nav:"explore",title:"页面说明 · 发现",description:"示例次级页面。",html:`<header class="app-head"><h1>发现</h1></header><div class="content"><article class="card"><h2>次级内容</h2><p class="muted">删除或替换此示例。</p></article></div>`},
+      archive: {nav:"archive",title:"页面说明 · 归档",description:"完成任务后，归档页会出现可核对的记录。",html:`<header class="app-head"><h1>归档</h1></header><div class="content"><article class="card"><button class="annotation" data-layer="ux" data-note="archive-state">2</button><h2>任务记录</h2><p id="archiveResult" class="muted"></p></article></div>`},
+      me: {nav:"me",title:"页面说明 · 我的",description:"示例低频设置页面。",html:`<header class="app-head"><h1>我的</h1></header><div class="content"><article class="card"><h2>设置与数据</h2><div class="row">偏好设置　→</div><div class="row">数据与隐私　→</div></article></div>`}
+    };
+
+    const notes = {
+      "home-primary": {title:"核心入口",body:"说明这个区域为何是首页最高权重，以及点击后进入什么状态。"},
+      "detail-step": {title:"关键步骤",body:"记录当前假设、布局理由，或仍需用户决定的问题。"},
+      "archive-state": {title:"数据 / 状态",body:"未完成时展示空状态；只有执行完成动作后，记录才出现。真实产品还需明确数据来源、加载和失败状态。"}
+    };
+
+    const assetSpecs = {
+      A01:{name:"核心氛围资产",type:"背景图 / 轻动效",page:"核心任务页 · 主内容区",priority:"P0",intent:"建立这一关键步骤应有的情绪与识别度",variants:"默认状态；仅在场景确实变化时增加变体",constraints:"适配目标画幅；保留文字安全区；保证对比度与文件体积",reuse:"可裁切用于入口卡片和完成页摘要"}
+    };
+
+    const journeys = {
+      primary: {
+        title:"完成一次核心任务",
+        actor:"刚产生明确需求、准备采取行动的人",
+        goal:"用最短路径完成产品承诺的核心任务",
+        outcome:"结果被保存，并给用户清晰的完成反馈",
+        transitions:[
+          {id:"open-task",from:"home",event:"点击核心任务入口",to:"detail",result:"核心任务工作区被打开"},
+          {id:"save-result",from:"detail",event:"完成并提交当前步骤",to:"archive",result:"结果被保存，并出现可确认的记录"}
+        ]
+      }
+    };
+
+    const screen = document.getElementById("screen");
+    const canvas = document.getElementById("canvas");
+    const menu = document.getElementById("createMenu");
+    const createButton = document.getElementById("createButton");
+    const drawer = document.getElementById("infoDrawer");
+    const infoButton = document.getElementById("infoButton");
+    const journeyPanel = document.getElementById("journeyPanel");
+    const journeyScrim = document.getElementById("journeyScrim");
+    const journeyButton = document.getElementById("journeyButton");
+    const activeJourney = journeys.primary;
+    let currentPage = "home";
+    let hasSavedResult = false;
+    let activePopoverAnchor = null;
+
+    function closeNotes(){
+      document.querySelectorAll(".popover").forEach(node=>node.remove());
+      activePopoverAnchor=null;
+    }
+
+    function closeTransient(){
+      menu.classList.remove("open");
+      createButton.setAttribute("aria-expanded","false");
+      closeNotes();
+    }
+
+    function closeJourney(){
+      journeyPanel.classList.remove("open");
+      journeyScrim.classList.remove("open");
+      journeyButton.setAttribute("aria-expanded","false");
+    }
+
+    function closeInfo(){
+      drawer.classList.remove("open");
+      infoButton.setAttribute("aria-expanded","false");
+    }
+
+    function drawJourney(){
+      document.getElementById("journeyTitle").textContent=activeJourney.title;
+      document.getElementById("journeyActor").textContent=activeJourney.actor;
+      document.getElementById("journeyGoal").textContent=activeJourney.goal;
+      document.getElementById("journeyOutcome").textContent=activeJourney.outcome;
+      document.getElementById("journeySteps").innerHTML=activeJourney.transitions.map((transition,index)=>`
+        <div class="journey-step">
+          <span class="journey-number">${index+1}</span>
+          <strong>${transition.event}</strong><span>${pages[transition.from].title.replace("页面说明 · ","")} → ${pages[transition.to].title.replace("页面说明 · ","")}</span><em>结果：${transition.result}</em>
+        </div>`).join("");
+    }
+
+    function performTransition(id){
+      const transition=activeJourney.transitions.find(item=>item.id===id);
+      if(!transition) return;
+      if(currentPage!==transition.from){console.warn(`[Blueprint] Transition ${id} expected ${transition.from}, received ${currentPage}.`);return;}
+      if(id==="save-result") hasSavedResult=true;
+      render(transition.to);
+    }
+
+    function render(key){
+      if(!pages[key]) return;
+      currentPage = key;
+      const page = pages[key];
+      closeTransient();
+      closeJourney();
+      closeInfo();
+      screen.innerHTML = page.html;
+      screen.scrollTop = 0;
+      if(key==="archive") document.getElementById("archiveResult").textContent=hasSavedResult?"已保存 · 核心任务已完成，可从此处再次查看。":"还没有完成记录。请从首页进入核心任务。";
+      document.getElementById("infoTitle").textContent = page.title;
+      document.getElementById("infoDescription").textContent = page.description;
+      document.querySelectorAll("[data-nav]").forEach(item=>item.classList.toggle("active",item.dataset.nav===page.nav));
+      drawJourney();
+    }
+
+    function openNote(button){
+      const note = notes[button.dataset.note];
+      if(!note) return;
+      closeNotes();
+      const popover = document.createElement("section");
+      popover.className="popover open";
+      popover.innerHTML=`<h3>${note.title}</h3><p>${note.body}</p><button class="button close" data-action="close-note">关闭</button>`;
+      canvas.appendChild(popover);
+      placePopover(popover,button);
+      activePopoverAnchor=button;
+    }
+
+    function placePopover(popover,button){
+      const canvasRect=canvas.getBoundingClientRect();
+      const buttonRect=button.getBoundingClientRect();
+      const width=popover.offsetWidth||300;
+      popover.style.left=Math.max(12,Math.min(buttonRect.right-canvasRect.left-width,canvas.clientWidth-width-12))+"px";
+      popover.style.top=Math.max(12,Math.min(buttonRect.bottom-canvasRect.top+8,canvas.clientHeight-popover.offsetHeight-12))+"px";
+    }
+
+    function openAsset(button){
+      const spec=assetSpecs[button.dataset.asset];
+      if(!spec) return;
+      closeNotes();
+      const popover=document.createElement("section");
+      popover.className="popover open";
+      popover.innerHTML=`<h3>${button.dataset.asset} · ${spec.name}</h3><dl class="asset-spec"><dt>类型</dt><dd>${spec.type}</dd><dt>位置</dt><dd>${spec.page}</dd><dt>优先级</dt><dd>${spec.priority}</dd><dt>意图</dt><dd>${spec.intent}</dd><dt>变体</dt><dd>${spec.variants}</dd><dt>约束</dt><dd>${spec.constraints}</dd><dt>复用</dt><dd>${spec.reuse}</dd></dl><button class="button close" data-action="close-note">关闭</button>`;
+      canvas.appendChild(popover);
+      placePopover(popover,button);
+      activePopoverAnchor=button;
+    }
+
+    function repositionNote(){
+      if(!activePopoverAnchor?.isConnected){closeNotes();return;}
+      const rect=activePopoverAnchor.getBoundingClientRect();
+      const area=screen.getBoundingClientRect();
+      if(rect.bottom<area.top||rect.top>area.bottom){closeNotes();return;}
+      const popover=document.querySelector(".popover");
+      if(popover) placePopover(popover,activePopoverAnchor);
+    }
+    screen.addEventListener("scroll",repositionNote,{passive:true});
+    window.addEventListener("resize",repositionNote);
+
+    document.addEventListener("click",event=>{
+      const note = event.target.closest("[data-note]");
+      const asset = event.target.closest("[data-asset]");
+      const transition = event.target.closest("[data-transition]");
+      const route = event.target.closest("[data-go]");
+      const action = event.target.closest("[data-action]");
+      if(note){event.stopPropagation();openNote(note);return;}
+      if(asset){event.stopPropagation();openAsset(asset);return;}
+      if(transition){event.stopPropagation();performTransition(transition.dataset.transition);return;}
+      if(route){event.stopPropagation();render(route.dataset.go);return;}
+      if(action?.dataset.action==="close-note"){closeNotes();return;}
+      if(!event.target.closest(".popover")) closeNotes();
+      if(!event.target.closest("#createMenu")&&!event.target.closest("#createButton")){menu.classList.remove("open");createButton.setAttribute("aria-expanded","false");}
+      if(!event.target.closest("#infoDrawer")&&!event.target.closest("#infoButton")) closeInfo();
+    });
+
+    createButton.addEventListener("click",event=>{
+      event.stopPropagation();
+      const open=menu.classList.toggle("open");
+      createButton.setAttribute("aria-expanded",String(open));
+      closeNotes();
+    });
+    infoButton.addEventListener("click",()=>{drawer.classList.add("open");infoButton.setAttribute("aria-expanded","true");});
+    document.getElementById("drawerClose").addEventListener("click",closeInfo);
+    document.getElementById("toggleUX").addEventListener("change",event=>{canvas.classList.toggle("hide-ux",!event.target.checked);closeNotes();});
+    document.getElementById("toggleAssets").addEventListener("change",event=>{canvas.classList.toggle("hide-assets",!event.target.checked);closeNotes();});
+    journeyButton.addEventListener("click",event=>{event.stopPropagation();closeTransient();drawJourney();journeyPanel.classList.add("open");journeyScrim.classList.add("open");journeyButton.setAttribute("aria-expanded","true");});
+    document.getElementById("journeyClose").addEventListener("click",closeJourney);
+    journeyScrim.addEventListener("click",closeJourney);
+    document.addEventListener("keydown",event=>{
+      if((event.key==="Enter"||event.key===" ")&&event.target.matches('[tabindex="0"]')){event.preventDefault();event.target.click();}
+      if(event.key==="Escape"){closeTransient();closeJourney();closeInfo();}
+    });
+
+    function validateBlueprint(){
+      const errors=[];
+      const pageNames=new Set(Object.keys(pages));
+      const transitionIds=new Set();
+      const allFragments=[document,...Object.values(pages).map(page=>new DOMParser().parseFromString(page.html,"text/html"))];
+      const all=(selector)=>allFragments.flatMap(root=>[...root.querySelectorAll(selector)]);
+
+      for(const transition of activeJourney.transitions){
+        if(!transition.id||transitionIds.has(transition.id)) errors.push(`Duplicate or missing transition id: ${transition.id||"(empty)"}`);
+        transitionIds.add(transition.id);
+        if(!pageNames.has(transition.from)||!pageNames.has(transition.to)) errors.push(`Transition ${transition.id} points to a missing page.`);
+        if(!transition.event||!transition.result) errors.push(`Transition ${transition.id} needs event and result.`);
+      }
+      for(const node of all("[data-go]")) if(!pageNames.has(node.dataset.go)) errors.push(`Missing route target: ${node.dataset.go}`);
+      for(const node of all("[data-transition]")) if(!transitionIds.has(node.dataset.transition)) errors.push(`Missing transition: ${node.dataset.transition}`);
+      for(const transition of activeJourney.transitions){
+        const source=pages[transition.from];
+        if(source&&!new DOMParser().parseFromString(source.html,"text/html").querySelector(`[data-transition="${transition.id}"]`)) errors.push(`Transition ${transition.id} has no action on ${transition.from}.`);
+      }
+      for(const node of all("[data-note]")) if(!notes[node.dataset.note]) errors.push(`Missing UX note: ${node.dataset.note}`);
+      for(const node of all("[data-asset]")) if(!assetSpecs[node.dataset.asset]) errors.push(`Missing asset specification: ${node.dataset.asset}`);
+      const wiredIds=new Set(["createButton","infoButton","drawerClose","journeyButton","journeyClose"]);
+      for(const button of all("button")){
+        const wired=button.disabled||button.dataset.go||button.dataset.transition||button.dataset.note||button.dataset.asset||button.dataset.action||wiredIds.has(button.id)||button.closest(".layer-toggle");
+        if(!wired) errors.push(`Active button without behavior: ${button.textContent.trim().slice(0,30)}`);
+      }
+      if(errors.length) console.error("[Blueprint validation]",errors); else console.info("[Blueprint validation] passed");
+      window.blueprintValidation={ok:errors.length===0,errors};
+      return window.blueprintValidation;
+    }
+    render(currentPage);
+    validateBlueprint();
+  </script>
+</body>
+</html>
